@@ -74,26 +74,28 @@ def predict():
                 feminineWords.append((word, score))
         
         # check if narrative is male or female and determine if biased
-        genderedWords = []
-        genderPercentage = None
-        if genderNarrative == 'male':
-            genderedWords = masculineWords
-            if pred[0][1] < pred[0][0]:
-                genderPercentage = 'NOT_BIASED'
-            else:
-                genderPercentage = pred[0][1]
-        else:
-            genderedWords = feminineWords
-            if pred[0][1] > pred[0][0]:
-                genderPercentage = 'NOT_BIASED'
-            else:
-                genderPercentage = pred[0][0]
+        # genderedWords = []
+        # genderPercentage = None
+        # if genderNarrative == 'male':
+        #     genderedWords = masculineWords
+        #     if pred[0][1] < pred[0][0]:
+        #         genderPercentage = 'NOT_BIASED'
+        #     else:
+        #         genderPercentage = pred[0][1]
+        # else:
+        #     genderedWords = feminineWords
+        #     if pred[0][1] > pred[0][0]:
+        #         genderPercentage = 'NOT_BIASED'
+        #     else:
+        #         genderPercentage = pred[0][0]
             
         print("Male: ", pred[0][1])
         print("Female: ", pred[0][0])
         return jsonify({
-            'genderPercentage': genderPercentage,
-            'relatedWords': genderedWords
+            'malePercentage': pred[0][1],
+            'femalePercentage': pred[0][0],
+            'masculineWords': masculineWords,
+            'feminineWords': feminineWords
         })
     except Exception as e:
         return jsonify({'error': str(e), 'trace': traceback.format_exc()})
