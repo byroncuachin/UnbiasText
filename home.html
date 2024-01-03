@@ -1,0 +1,343 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>UnbiasText</title>
+        <style>
+            * {
+                box-sizing: border-box;
+            }   
+            body {
+                background-color:#111111;
+                color: white;
+            }
+            .content {
+                padding: 60px;
+                text-align: center;
+                color: white;
+                font-size: 30px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .inputWrapper{
+                width: 75%;
+            }
+            input[type=submit] {
+                background-color: #04AA6D;
+                color: white;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            input[type=submit]:hover {
+                background-color: #45a049;
+            }
+
+            textarea{
+                height: 200px;
+                width: 100%;
+                border-radius: 4px;
+                padding: 10px;
+                resize: vertical;
+                background-color: transparent;
+                color: white;  
+                background-color:  #222222;
+            }
+            
+            #outputDiv{
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+         /*       background-color: #222222;*/
+                margin-top: 25px;
+                color: white;
+                font-size: 20px;
+                align-items: center;
+            }
+
+            .highlightMale {
+                background-color: #0F52BA;
+              /*  color: black; */
+            }
+
+            .highlightFemale {
+                background-color: #AA336A;
+              /*  color: black; */
+            }
+
+             /* Styling for the toggle container */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-left: 12.5%;
+        }
+
+        /* Styling for the toggle switch */
+        .toggle-switch {
+            width: 40px;
+            height: 20px;
+            background-color: #0F52BA;
+            border-radius: 10px;
+            position: relative;
+            margin-right: 10px;
+            transition: background 0.6s ease;
+        }
+
+        /* Styling for the toggle handle */
+        .toggle-handle {
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.3s ease;
+        }
+
+        /* Styling for the toggle text */
+        .toggle-text {
+            /*font-family: Arial, sans-serif; */
+            font-size: 20px;
+        }  
+        
+        .submit-button {
+            margin-right: 12.5%;
+        }
+
+        .buttons {
+            flex-direction: row;
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        /* Styling for the container */
+        .percentage-container {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            margin: 20px;
+        }
+
+        /* Styling for the percentage divs */
+        .percentage-div {
+            width: 30%; /* Adjust as needed */
+            padding: 10px;
+            border: 1px solid #ccc; 
+            text-align: center;
+        }
+
+        #outputText {
+            background-color: #222222;
+        }
+
+        #outputPercentages {
+            display: flex;
+            width: 50%;
+            justify-content: space-around;
+        }
+        
+        #maleDiv {
+            background-color: #0F52BA;
+        }
+
+        #femaleDiv{
+            background-color: #AA336A;
+        }
+        </style>
+
+      
+
+        
+    </head>
+
+    <body> 
+        <div class="content">
+            <h1>UnbiasText</h1>
+            <div class="inputWrapper">
+                <form id="myForm">
+                    <textarea id="inputText" placeholder="Write something . . ."></textarea>
+                    <div class="buttons"> 
+                        <div class="toggle-container" onclick="toggleElement()">
+                            <div class="toggle-switch">
+                                <div class="toggle-handle"></div>
+                            </div>
+                            <div class="toggle-text">Male Narrative</div>
+                
+                        </div>
+                        <div class="submit-button"> 
+                            <input type="submit" id="submitButton" value="Submit">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="outputDiv">
+                <div id="outputPercentages">
+                    <div id="maleDiv">
+                        <span id="maleSpan"></span>
+                        <p id="maleP"></p>
+                    </div>
+                    <div id="femaleDiv">
+                        <span id="femaleSpan"></span>
+                        <p id="femaleP"></p>
+                    </div>
+                </div>
+                <div id="outputText"></div>
+            </div>
+        </div>
+        <script>
+           // Modify the event listener to pass the event parameter
+document.getElementById('submitButton').addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    submitText(event); // Call your function
+});
+
+
+function copyAndHighlight(){
+        // Get the input text
+        var inputText = document.getElementById("inputText").value;
+
+        // Get the words to highlight (you can modify this array as needed)
+        var maleHighlight = ["he", "him", "his"];
+        var femaleHighlight = ["she", "her", "hers"];
+
+        // Escape special characters in the words to avoid issues with regular expressions
+        var escapedMaleWords = maleHighlight.map(function(word) {
+            return word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        });
+        var escapedFemaleWords = femaleHighlight.map(function(word) {
+            return word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        });
+
+        // Create a regular expression pattern to match the words
+        var pattern1 = new RegExp('\\b(' + escapedMaleWords.join('|') + ')\\b', 'gi');
+        var pattern2 = new RegExp('\\b(' + escapedFemaleWords.join('|') + ')\\b', 'gi');
+
+        // Replace matched words with highlighted version
+        var highlightedText = inputText.replace(pattern1, function(match) {
+            return '<span class="highlightMale">' + match + '</span>';
+        });
+        highlightedText = highlightedText.replace(pattern2, function(match) {
+            return '<span class="highlightFemale">' + match + '</span>';
+        });
+
+        // Set the highlighted text to the output div
+        document.getElementById("outputText").innerHTML = highlightedText;
+
+        }
+
+      /*  function handleEnter(event) {
+        // If Enter key is pressed, trigger copyAndHighlight function
+        if (event.key === "Enter") {
+            copyAndHighlight();
+        }
+        }*/
+
+        function toggleElement() {
+        var toggleHandle = document.querySelector('.toggle-handle');
+        var toggleText = document.querySelector('.toggle-text');
+        var toggleSwitch = document.querySelector('.toggle-switch');
+
+        // Toggle the state
+        var isActive = toggleHandle.style.transform === 'translateX(20px)';
+        if (isActive) {
+            toggleHandle.style.transform = 'translateX(0)';
+            toggleText.textContent = 'Male Narrative';
+            toggleSwitch.style.backgroundColor = '#0F52BA';
+        } else {
+            toggleHandle.style.transform = 'translateX(20px)';
+            toggleText.textContent = 'Female Narrative';
+            toggleSwitch.style.backgroundColor = '#AA336A';
+        }
+        }
+
+        function displayPercentageContainer(m_percent, f_percent) {
+        // Create the container div
+        var percentageContainer = document.getElementById("outputPercentages");
+        percentageContainer.classList.add('percentage-container');
+
+        // Create the first percentage div
+        var percentageDiv1 = fillMaleDiv(m_percent, 'Male Bias');
+
+        // Create the second percentage div
+        var percentageDiv2 = fillFemaleDiv(f_percent, 'Female Bias');
+
+        // Append the percentage divs to the container
+        percentageContainer.appendChild(percentageDiv1);
+        percentageContainer.appendChild(percentageDiv2);
+
+        // Append the container to the body
+        //document.body.appendChild(percentageContainer);
+        }
+
+        function fillMaleDiv(percentage, label) {
+        // Create a percentage div
+        var percentageDiv = document.getElementById("maleDiv");
+        percentageDiv.classList.add('percentage-div');
+
+        // Create a span for the percentage
+        var percentageSpan = document.getElementById("maleSpan");
+        percentageSpan.textContent = percentage;
+
+        // Create a paragraph for the label
+        var labelParagraph = document.getElementById("maleP");
+        labelParagraph.textContent = label;
+
+        return percentageDiv;
+        }
+
+        function fillFemaleDiv(percentage, label) {
+        // Create a percentage div
+        var percentageDiv = document.getElementById("femaleDiv");
+        percentageDiv.classList.add('percentage-div');
+
+        // Create a span for the percentage
+        var percentageSpan = document.getElementById("femaleSpan");
+        percentageSpan.textContent = percentage;
+
+        // Create a paragraph for the label
+        var labelParagraph = document.getElementById("femaleP");
+        labelParagraph.textContent = label;
+
+        return percentageDiv;
+        }
+
+        function submitText(event) {
+            console.log('hello');
+           // event.preventDefault();
+          //  event.stopPropagation();
+            
+            console.log('hello2');
+        const textInput = document.getElementById('inputText').value;
+
+        // Send a POST request to the server
+        fetch('http://localhost:3000', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: textInput }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+
+            // Update the DOM to display the received text
+            const outputText = document.getElementById('outputText');
+            outputText.innerHTML = `${data.userInput}`;
+
+            // Display the percentages after setting the output text
+            displayPercentageContainer(data.malePercentage, data.femalePercentage);
+            copyAndHighlight();
+        })
+        .catch(error => console.error('Error:', error));
+    }
+        </script>
+    </body>
+</html>

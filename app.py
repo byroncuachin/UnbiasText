@@ -39,7 +39,7 @@ def preprocess():
         text = data['text']
         addSpaceBeforeText = add_space_before(text)
         res = remove_gendered_pronouns_and_names(addSpaceBeforeText)
-        return jsonify({'preprocessed': str(res)})
+        return jsonify({'preprocessedText': str(res)})
     except Exception as e:
         return jsonify({'error': str(e), 'trace': traceback.format_exc()})
 
@@ -50,8 +50,7 @@ def predict():
         # get data
         data = request.get_json()
         text = data['text']
-        genderNarrative = data['genderNarrative']
-        
+                
         # get model
         with open('randomForestModel.pkl', 'rb') as model_file:
             model, vectorizer = pickle.load(model_file)
@@ -72,22 +71,6 @@ def predict():
                 masculineWords.append((word, score))
             else:
                 feminineWords.append((word, score))
-        
-        # check if narrative is male or female and determine if biased
-        # genderedWords = []
-        # genderPercentage = None
-        # if genderNarrative == 'male':
-        #     genderedWords = masculineWords
-        #     if pred[0][1] < pred[0][0]:
-        #         genderPercentage = 'NOT_BIASED'
-        #     else:
-        #         genderPercentage = pred[0][1]
-        # else:
-        #     genderedWords = feminineWords
-        #     if pred[0][1] > pred[0][0]:
-        #         genderPercentage = 'NOT_BIASED'
-        #     else:
-        #         genderPercentage = pred[0][0]
             
         print("Male: ", pred[0][1])
         print("Female: ", pred[0][0])
