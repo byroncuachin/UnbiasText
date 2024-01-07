@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
 import pickle, re, spacy, traceback
 import pandas as pd
+import spacy
 from lime import lime_text
 from lime.lime_text import LimeTextExplainer
+from spacy.lang.en.stop_words import STOP_WORDS
 
 app = Flask(__name__)
 explainer = LimeTextExplainer(class_names=['female', 'male'])
@@ -23,7 +25,9 @@ def remove_gendered_pronouns_and_names(text):
         "" if (
             token.pos_ == "PRON" and token.lemma_ not in ["I", "you"]
         ) or (
-            token.ent_type_ == "PERSON"
+            token.ent_type_ == "PERSON" or token.text.lower() in ["woman", "women", "man", "men", "he", "she", "him", "her"]
+        ) or (
+            token.text.lower() in STOP_WORDS
         ) else token.text for token in doc])
 
     return result.strip()
