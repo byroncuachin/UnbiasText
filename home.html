@@ -188,6 +188,7 @@
                         <p id="femaleP"></p>
                     </div>
                 </div>
+                <div id="result"></div>
                 <div id="outputText"></div>
             </div>
         </div>
@@ -199,13 +200,20 @@ document.getElementById('submitButton').addEventListener('click', function(event
 });
 
 
-function copyAndHighlight(){
+function copyAndHighlight(m_highlight, f_highlight){
         // Get the input text
         var inputText = document.getElementById("inputText").value;
 
+        console.log('Male Highlight:', m_highlight);
+        var maleHighlight = m_highlight.map(function(subArray){return subArray[0];});
+        console.log(maleHighlight);
         // Get the words to highlight (you can modify this array as needed)
-        var maleHighlight = ["he", "him", "his"];
-        var femaleHighlight = ["she", "her", "hers"];
+        //var maleHighlight = ["he", "him", "his"];
+        //var maleHighlight = m_highlight;
+        // console.log('Male Highlight:', maleHighlight);
+        // var femaleHighlight = ["she", "her", "hers"];
+        var femaleHighlight = f_highlight.map(function(subArray){return subArray[0];});
+        console.log(femaleHighlight);
 
         // Escape special characters in the words to avoid issues with regular expressions
         var escapedMaleWords = maleHighlight.map(function(word) {
@@ -258,15 +266,34 @@ function copyAndHighlight(){
         }
 
         function displayPercentageContainer(m_percent, f_percent) {
+       
+        //Raw values
+        console.log("Raw m_percent:", m_percent);
+        console.log("Raw f_percent:", f_percent);
+
+        //Truncate percent values
+        var truncated1 = Number(m_percent.toFixed(2));
+        var truncated2 = Number(f_percent.toFixed(2));
+
+        console.log("Truncated m_percent:", truncated1);
+        console.log("Truncated f_percent:", truncated2);
+
+        //Add percent symbol
+        var percent1 = `${truncated1}%`;
+        var percent2 = `${truncated2}%`;
+
+        console.log("Add %:", percent1);
+        console.log("Add %", percent2);
+
         // Create the container div
         var percentageContainer = document.getElementById("outputPercentages");
         percentageContainer.classList.add('percentage-container');
 
         // Create the first percentage div
-        var percentageDiv1 = fillMaleDiv(m_percent, 'Male Bias');
+        var percentageDiv1 = fillMaleDiv(percent1, 'Male Bias');
 
         // Create the second percentage div
-        var percentageDiv2 = fillFemaleDiv(f_percent, 'Female Bias');
+        var percentageDiv2 = fillFemaleDiv(percent2, 'Female Bias');
 
         // Append the percentage divs to the container
         percentageContainer.appendChild(percentageDiv1);
@@ -309,11 +336,11 @@ function copyAndHighlight(){
         }
 
         function submitText(event) {
-            console.log('hello');
+           // console.log('hello');
            // event.preventDefault();
           //  event.stopPropagation();
             
-            console.log('hello2');
+           // console.log('hello2');
         const textInput = document.getElementById('inputText').value;
 
         // Send a POST request to the server
@@ -332,9 +359,30 @@ function copyAndHighlight(){
             const outputText = document.getElementById('outputText');
             outputText.innerHTML = `${data.userInput}`;
 
+            // Check for bias and display result
+            const isActive = document.querySelector('.toggle-handle').style.transform === 'translateX(20px)';
+            console.log(isActive);
+            const isBiased = (data.malePercentage >= 70 && !isActive) || (data.femalePercentage >= 70 && isActive);
+
+
+            // Assign masculineWords to maleHighlight
+            console.log('Male Highlight:', data.maleHighlight);
+            console.log('Male Percentage', data.malePercentage);
+
             // Display the percentages after setting the output text
             displayPercentageContainer(data.malePercentage, data.femalePercentage);
-            copyAndHighlight();
+
+            //Display bias result
+            const resultElement = document.getElementById('result');
+            if (isBiased) {
+            resultElement.textContent = 'BIASED';
+            resultElement.style.color = 'red';  // Customize the styling
+            } else {
+            resultElement.textContent = 'UNBIASED';
+            resultElement.style.color = 'green';  // Customize the styling
+            }
+
+            copyAndHighlight(data.maleHighlight, data.femaleHighlight);
         })
         .catch(error => console.error('Error:', error));
     }
