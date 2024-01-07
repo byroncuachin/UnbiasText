@@ -43,10 +43,12 @@ app.post('/', async (req, res) => {
         console.log('Female Percentage:', predictionResponse.data.femalePercentage);
         console.log('Feminine Words', predictionResponse.data.feminineWords);
 
-        const m_percent = 75;
-        const f_percent = 25;
+        const m_percent = predictionResponse.data.malePercentage * 100;
+        const f_percent = predictionResponse.data.femalePercentage * 100;
+        const m_highlight = predictionResponse.data.masculineWords;
+        const f_highlight = predictionResponse.data.feminineWords;
         // Send a response
-        res.status(200).send({ message: 'Text submitted successfully', userInput, malePercentage: m_percent, femalePercentage: f_percent, });
+        res.status(200).send({ message: 'Text submitted successfully', userInput, malePercentage: m_percent, femalePercentage: f_percent, maleHighlight: m_highlight, femaleHighlight: f_highlight});
 
     } catch (error) {
         console.error(error);
