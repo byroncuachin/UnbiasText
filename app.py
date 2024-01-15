@@ -56,14 +56,14 @@ def predict():
         text = data['text']
                 
         # get model
-        with open('randomForestModel.pkl', 'rb') as model_file:
+        with open('savedModels/randomForestModel.pkl', 'rb') as model_file:
             model, vectorizer = pickle.load(model_file)
         vectorizedText = vectorizer.transform([text])
         textsTransformed = pd.DataFrame(vectorizedText.toarray(), columns=vectorizer.get_feature_names_out())
         
         # predict text bias probabilities
         pred = model.predict_proba(textsTransformed)
-        
+                
         # get most influential words
         predict_function = lambda x: model.predict_proba(vectorizer.transform(x))
         explanation = explainer.explain_instance(text, predict_function, num_features=20)
