@@ -107,14 +107,14 @@
         }  
         
         .submit-button {
-            margin-right: 12.5%;
+            margin-right: 0;
         }
 
         .buttons {
             flex-direction: row;
             display: flex;
             width: 100%;
-            justify-content: space-between;
+            justify-content: right;
         }
 
         /* Styling for the container */
@@ -164,13 +164,13 @@
                 <form id="myForm">
                     <textarea id="inputText" placeholder="Write something . . ."></textarea>
                     <div class="buttons"> 
-                        <div class="toggle-container" onclick="toggleElement()">
+                         <!--<div class="toggle-container" onclick="toggleElement()">
                             <div class="toggle-switch">
                                 <div class="toggle-handle"></div>
                             </div>
-                            <div class="toggle-text">Male Narrative</div>
+                           <div class="toggle-text">Male Narrative</div>
                 
-                        </div>
+                        </div>-->
                         <div class="submit-button"> 
                             <input type="submit" id="submitButton" value="Submit">
                         </div>
@@ -246,7 +246,7 @@ function copyAndHighlight(m_highlight, f_highlight){
             copyAndHighlight();
         }
         }*/
-
+/*
         function toggleElement() {
         var toggleHandle = document.querySelector('.toggle-handle');
         var toggleText = document.querySelector('.toggle-text');
@@ -264,7 +264,7 @@ function copyAndHighlight(m_highlight, f_highlight){
             toggleSwitch.style.backgroundColor = '#AA336A';
         }
         }
-
+*/
         function displayPercentageContainer(m_percent, f_percent) {
        
         //Raw values
@@ -360,9 +360,9 @@ function copyAndHighlight(m_highlight, f_highlight){
             outputText.innerHTML = `${data.userInput}`;
 
             // Check for bias and display result
-            const isActive = document.querySelector('.toggle-handle').style.transform === 'translateX(20px)';
-            console.log(isActive);
-            const isBiased = (data.malePercentage >= 70 && !isActive) || (data.femalePercentage >= 70 && isActive);
+         //   const isActive = document.querySelector('.toggle-handle').style.transform === 'translateX(20px)';
+         //   console.log(isActive);
+            const isBiased = (data.malePercentage >= 70) || (data.femalePercentage >= 70);
 
 
             // Assign masculineWords to maleHighlight
