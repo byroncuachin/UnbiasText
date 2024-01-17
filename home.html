@@ -135,6 +135,7 @@
 
         #outputText {
             background-color: #222222;
+            margin-top: 10px;
         }
 
         #outputPercentages {
@@ -149,6 +150,26 @@
 
         #femaleDiv{
             background-color: #AA336A;
+        }
+        #wordvectorChart{
+            width: 100%;
+            margin-top: 60px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+        }
+        
+        .maleChart{
+            padding: 10px;
+            border: 2px solid #0F52BA;
+        }
+
+        .femaleChart{
+            padding: 10px;
+            border: 2px solid #AA336A;
+        }
+        #result{
+            margin-top: 20px;
         }
         </style>
 
@@ -190,55 +211,84 @@
                 </div>
                 <div id="result"></div>
                 <div id="outputText"></div>
+                <div id="wordvectorChart">
+                    <div id="maleChart"></div>
+                    <div id="femaleChart"></div>
+                </div>
             </div>
         </div>
+
         <script>
-           // Modify the event listener to pass the event parameter
-document.getElementById('submitButton').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent the default form submission
-    submitText(event); // Call your function
-});
+
+            // Modify the event listener to pass the event parameter
+            document.getElementById('submitButton').addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                submitText(event); // Call your function
+            });
 
 
-function copyAndHighlight(m_highlight, f_highlight){
-        // Get the input text
-        var inputText = document.getElementById("inputText").value;
+            function copyAndHighlight(m_highlight, f_highlight){
+                // Get the input text
+                var inputText = document.getElementById("inputText").value;
 
-        console.log('Male Highlight:', m_highlight);
-        var maleHighlight = m_highlight.map(function(subArray){return subArray[0];});
-        console.log(maleHighlight);
-        // Get the words to highlight (you can modify this array as needed)
-        //var maleHighlight = ["he", "him", "his"];
-        //var maleHighlight = m_highlight;
-        // console.log('Male Highlight:', maleHighlight);
-        // var femaleHighlight = ["she", "her", "hers"];
-        var femaleHighlight = f_highlight.map(function(subArray){return subArray[0];});
-        console.log(femaleHighlight);
+                console.log('Male Highlight:', m_highlight);
+                var maleHighlight = m_highlight.map(function(subArray){return subArray[0];});
+                console.log(maleHighlight);
+                // Get the words to highlight (you can modify this array as needed)
+                //var maleHighlight = ["he", "him", "his"];
+                //var maleHighlight = m_highlight;
+                // console.log('Male Highlight:', maleHighlight);
+                // var femaleHighlight = ["she", "her", "hers"];
+                var femaleHighlight = f_highlight.map(function(subArray){return subArray[0];});
+                console.log(femaleHighlight);
 
-        // Escape special characters in the words to avoid issues with regular expressions
-        var escapedMaleWords = maleHighlight.map(function(word) {
-            return word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        });
-        var escapedFemaleWords = femaleHighlight.map(function(word) {
-            return word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        });
+                // Escape special characters in the words to avoid issues with regular expressions
+                var escapedMaleWords = maleHighlight.map(function(word) {
+                    return word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                });
+                var escapedFemaleWords = femaleHighlight.map(function(word) {
+                    return word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                });
 
-        // Create a regular expression pattern to match the words
-        var pattern1 = new RegExp('\\b(' + escapedMaleWords.join('|') + ')\\b', 'gi');
-        var pattern2 = new RegExp('\\b(' + escapedFemaleWords.join('|') + ')\\b', 'gi');
+                // Create a regular expression pattern to match the words
+                var pattern1 = new RegExp('\\b(' + escapedMaleWords.join('|') + ')\\b', 'gi');
+                var pattern2 = new RegExp('\\b(' + escapedFemaleWords.join('|') + ')\\b', 'gi');
 
-        // Replace matched words with highlighted version
-        var highlightedText = inputText.replace(pattern1, function(match) {
-            return '<span class="highlightMale">' + match + '</span>';
-        });
-        highlightedText = highlightedText.replace(pattern2, function(match) {
-            return '<span class="highlightFemale">' + match + '</span>';
-        });
+                // Replace matched words with highlighted version
+                var highlightedText = inputText.replace(pattern1, function(match) {
+                    return '<span class="highlightMale">' + match + '</span>';
+                });
+                highlightedText = highlightedText.replace(pattern2, function(match) {
+                    return '<span class="highlightFemale">' + match + '</span>';
+                });
 
-        // Set the highlighted text to the output div
-        document.getElementById("outputText").innerHTML = highlightedText;
+                // Set the highlighted text to the output div
+                document.getElementById("outputText").innerHTML = highlightedText;
+            }
 
-        }
+            function displayWordVectors(m_words, f_words){
+                var malechart = document.getElementById("maleChart");
+                var femalechart = document.getElementById("femaleChart");
+
+                malechart.innerHTML = ''; // Clear existing content
+                femalechart.innerHTML = ''; // Clear existing content
+             //   var mas_words = m_words.map(function(subArray){return subArray;});
+                malechart.innerHTML += 'Masculine Words<br>';
+                Object.entries(m_words).forEach(([key, value]) => {
+                    malechart.innerHTML += `${key}: ${value[0]}, ${value[1]}<br>`;
+                });
+          //      var fem_words = f_words.map(function(subArray){return subArray;});
+                femalechart.innerHTML += 'Feminine Words<br>';
+             //   Object.entries(m_words).forEach(([key, value]) => {
+              //      chart.innerHTML += fem_words;
+           //     });
+               // chart.innerHTML += 'Feminine Words<br>';
+                Object.entries(f_words).forEach(([key, value]) => {
+                    femalechart.innerHTML += `${key}: ${value[0]}, ${value[1]}<br>`;
+                });
+                malechart.classList.add('maleChart');
+                femalechart.classList.add('femaleChart');
+            }
 
       /*  function handleEnter(event) {
         // If Enter key is pressed, trigger copyAndHighlight function
@@ -382,7 +432,10 @@ function copyAndHighlight(m_highlight, f_highlight){
             resultElement.style.color = 'green';  // Customize the styling
             }
 
-            copyAndHighlight(data.maleHighlight, data.femaleHighlight);
+            copyAndHighlight(data.maleHighlight, data.femaleHighlight);            
+            
+            //Display the words with their associated vectors
+            displayWordVectors(data.maleHighlight, data.femaleHighlight);
         })
         .catch(error => console.error('Error:', error));
     }
