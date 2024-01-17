@@ -72,9 +72,9 @@ def predict():
         feminineWords = []
         for word, score in top_words_lime:
             if score > 0:
-                masculineWords.append((word, score))
+                masculineWords.append((word, round(score, 3)))
             else:
-                feminineWords.append((word, score))
+                feminineWords.append((word, round(score, 3)))
             
         print("Male: ", pred[0][1])
         print("Female: ", pred[0][0])
