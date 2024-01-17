@@ -161,15 +161,51 @@
         
         .maleChart{
             padding: 10px;
-            border: 2px solid #0F52BA;
+         /*   border: 2px solid #0F52BA; */
+            width: 40%;
         }
 
         .femaleChart{
             padding: 10px;
-            border: 2px solid #AA336A;
+         /*   border: 2px solid #AA336A; */
+            width: 40%; 
         }
         #result{
             margin-top: 20px;
+        }
+        
+
+        /* Styling for the table cells in the masculine and feminine word tables */
+        .maleChart th, .maleChart td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #0F52BA;
+        }
+
+        .femaleChart th, .femaleChart td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #AA336A;
+        }
+
+        .maleChart th, .femaleChart th {
+            background-color: #f2f2f2;
+        }
+
+        /* Adjust the widths of the table cells */
+        .maleChart th:first-child, .femaleChart th:first-child,
+        .maleChart td:first-child, .femaleChart td:first-child {
+            width: 10%; /* Adjust as needed */
+        }
+
+        .maleChart th:nth-child(2), .femaleChart th:nth-child(2),
+        .maleChart td:nth-child(2), .femaleChart td:nth-child(2) {
+            width: 40%; /* Adjust as needed */
+        }
+
+        .maleChart th:nth-child(3), .femaleChart th:nth-child(3),
+        .maleChart td:nth-child(3), .femaleChart td:nth-child(3) {
+            width: 50%; /* Adjust as needed */
         }
         </style>
 
@@ -270,24 +306,70 @@
                 var malechart = document.getElementById("maleChart");
                 var femalechart = document.getElementById("femaleChart");
 
-                malechart.innerHTML = ''; // Clear existing content
-                femalechart.innerHTML = ''; // Clear existing content
-             //   var mas_words = m_words.map(function(subArray){return subArray;});
+               // malechart.innerHTML = ''; // Clear existing content
+               // femalechart.innerHTML = ''; // Clear existing content
+
+                // Clear existing content
+                clearElement(malechart);
+                clearElement(femalechart);
+
+                //Create tables
+                malechart.appendChild(createTableElement('Masculine Words', m_words));
+                femalechart.appendChild(createTableElement('Feminine Words', f_words));
+
+                /*
                 malechart.innerHTML += 'Masculine Words<br>';
                 Object.entries(m_words).forEach(([key, value]) => {
                     malechart.innerHTML += `${key}: ${value[0]}, ${value[1]}<br>`;
                 });
-          //      var fem_words = f_words.map(function(subArray){return subArray;});
+
                 femalechart.innerHTML += 'Feminine Words<br>';
-             //   Object.entries(m_words).forEach(([key, value]) => {
-              //      chart.innerHTML += fem_words;
-           //     });
-               // chart.innerHTML += 'Feminine Words<br>';
                 Object.entries(f_words).forEach(([key, value]) => {
                     femalechart.innerHTML += `${key}: ${value[0]}, ${value[1]}<br>`;
                 });
+                */
+
                 malechart.classList.add('maleChart');
                 femalechart.classList.add('femaleChart');
+            }
+
+            function createTableElement(title, words) {
+                // Create a table element
+                var table = document.createElement('table');
+
+                // Create a table caption
+                var caption = table.createCaption();
+                caption.textContent = title;
+
+                // Create table header row
+                var headerRow = table.insertRow();
+                var headerCell1 = headerRow.insertCell(0);
+                var headerCell2 = headerRow.insertCell(1);
+                var headerCell3 = headerRow.insertCell(2);
+                headerCell1.textContent = '#';
+                headerCell2.textContent = 'Word';
+                headerCell3.textContent = 'Value';
+
+                var count = 1;
+                // Populate the table with data
+                Object.entries(words).forEach(([key, value]) => {
+                    var row = table.insertRow();
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    cell1.textContent = count++;
+                    cell2.textContent = `${value[0]}`;
+                    cell3.textContent = `${value[1]}`;
+                });
+
+                return table;
+            }
+
+            function clearElement(element) {
+                // Remove all child nodes from the element
+                while (element.firstChild) {
+                    element.removeChild(element.firstChild);
+                }
             }
 
       /*  function handleEnter(event) {
