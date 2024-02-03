@@ -290,13 +290,23 @@
                 var pattern1 = new RegExp('\\b(' + escapedMaleWords.join('|') + ')\\b', 'gi');
                 var pattern2 = new RegExp('\\b(' + escapedFemaleWords.join('|') + ')\\b', 'gi');
 
+                var highlightedText = null;
                 // Replace matched words with highlighted version
-                var highlightedText = inputText.replace(pattern1, function(match) {
+                if (m_highlight.length != 0){
+                highlightedText = inputText.replace(pattern1, function(match) {
                     return '<span class="highlightMale">' + match + '</span>';
-                });
+                });}
+                
+                else if (f_highlight.length != 0){
+                highlightedText = inputText.replace(pattern2, function(match) {
+                    return '<span class="highlightFemale">' + match + '</span>';
+                });}
+
+                if (f_highlight.length != 0){
                 highlightedText = highlightedText.replace(pattern2, function(match) {
                     return '<span class="highlightFemale">' + match + '</span>';
-                });
+                });}
+             
 
                 // Set the highlighted text to the output div
                 document.getElementById("outputText").innerHTML = highlightedText;
