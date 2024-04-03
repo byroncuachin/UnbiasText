@@ -5,9 +5,11 @@ import spacy
 from lime import lime_text
 from lime.lime_text import LimeTextExplainer
 from spacy.lang.en.stop_words import STOP_WORDS
+from nltk.stem import PorterStemmer
 
 app = Flask(__name__)
 explainer = LimeTextExplainer(class_names=['female', 'male'])
+stemmer = PorterStemmer()
 
 # # Preprocessing functions
 # add space before punctuations
@@ -16,8 +18,8 @@ def add_space_before(text):
     processed_text = re.sub(r'([^\s\w])', r' \1', text)
     return processed_text
 
-# remove gendered pronouns and names
-def remove_gendered_pronouns_and_names(text):
+# remove gendered pronounds, names, stop words, and apply stemming
+def removeUnnecessaryWords(text):
     nlp = spacy.load("en_core_web_sm")
     doc = nlp(text)
 
@@ -28,25 +30,13 @@ def remove_gendered_pronouns_and_names(text):
             token.ent_type_ == "PERSON" or token.text.lower() in ["woman", "women", "man", "men", "he", "she", "him", "her"]
         ) or (
             token.text.lower() in STOP_WORDS
-        ) else token.text for token in doc])
+        ) else stemmer.stem(token.lemma_) for token in doc])
 
     return result.strip()
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # # APIs
-# preprocessing data
-@app.route('/preprocess', methods=['POST'])
-def preprocess():
-    try:
-        data = request.get_json()
-        text = data['text']
-        addSpaceBeforeText = add_space_before(text)
-        res = remove_gendered_pronouns_and_names(addSpaceBeforeText)
-        return jsonify({'preprocessedText': str(res)})
-    except Exception as e:
-        return jsonify({'error': str(e), 'trace': traceback.format_exc()})
-
 # predict data
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -54,6 +44,10 @@ def predict():
         # get data
         data = request.get_json()
         text = data['text']
+        
+        # preprocessing text
+        addSpaceBeforeText = add_space_before(text)
+        text = removeUnnecessaryWords(addSpaceBeforeText)
                 
         # get model
         with open('savedModels/randomForestModel.pkl', 'rb') as model_file:
@@ -66,8 +60,9 @@ def predict():
                 
         # get most influential words
         predict_function = lambda x: model.predict_proba(vectorizer.transform(x))
-        explanation = explainer.explain_instance(text, predict_function, num_features=20)
+        explanation = explainer.explain_instance(text, predict_function, num_features=100)
         top_words_lime = explanation.as_list()
+        print("TOP WORDS: ", top_words_lime)
         masculineWords = []
         feminineWords = []
         for word, score in top_words_lime:
@@ -75,12 +70,21 @@ def predict():
                 masculineWords.append((word, round(score, 3)))
             else:
                 feminineWords.append((word, round(score, 3)))
+
+        masculineWords = masculineWords[:10]
+        feminineWords = feminineWords[:10]
+        
+        if len(masculineWords) != len(feminineWords):
+            masculineWords = masculineWords[:min(len(masculineWords), len(feminineWords))]
+            feminineWords = feminineWords[:min(len(masculineWords), len(feminineWords))]
             
         print("Male: ", pred[0][1])
         print("Female: ", pred[0][0])
+        print("Masculine Words: ", masculineWords)
+        print("Feminine Words: ", feminineWords)
         return jsonify({
-            'malePercentage': pred[0][1],
-            'femalePercentage': pred[0][0],
+            'malePercentage': round(pred[0][1], 2),
+            'femalePercentage': round(pred[0][0], 2),
             'masculineWords': masculineWords,
             'feminineWords': feminineWords
         })

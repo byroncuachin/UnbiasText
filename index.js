@@ -26,16 +26,9 @@ app.post('/', async (req, res) => {
     console.log('Received text:', userInput);
 
     try {
-        // preprocessing API call
-        const preprocessingResponse = await axios.post('http://127.0.0.1:5000/preprocess', {
-            text: userInput
-        });
-        console.log('Preprocessing data:', preprocessingResponse.data)
-        console.log('Preprocessed text:', preprocessingResponse.data.preprocessedText);
-
         // prediction API call
         const predictionResponse = await axios.post('http://127.0.0.1:5000/predict', {
-            text: preprocessingResponse.data.preprocessedText
+            text: userInput
         });
         console.log('Prediction data:', predictionResponse.data);
         console.log('Male Percentage:', predictionResponse.data.malePercentage);
