@@ -35,13 +35,17 @@ app.post('/', async (req, res) => {
         console.log('Masculine Words', predictionResponse.data.masculineWords);
         console.log('Female Percentage:', predictionResponse.data.femalePercentage);
         console.log('Feminine Words', predictionResponse.data.feminineWords);
+        console.log('Original Masculine Words:', predictionResponse.data.originalMasculineWords);
+        console.log('Original Feminine Words:', predictionResponse.data.originalFeminineWords);
 
         const m_percent = predictionResponse.data.malePercentage * 100;
         const f_percent = predictionResponse.data.femalePercentage * 100;
-        const m_highlight = predictionResponse.data.masculineWords;
-        const f_highlight = predictionResponse.data.feminineWords;
+        const m_highlight = predictionResponse.data.originalMasculineWords;
+        const f_highlight = predictionResponse.data.originalFeminineWords;
+        const m_table = predictionResponse.data.masculineWords;
+        const f_table = predictionResponse.data.feminineWords;
         // Send a response
-        res.status(200).send({ message: 'Text submitted successfully', userInput, malePercentage: m_percent, femalePercentage: f_percent, maleHighlight: m_highlight, femaleHighlight: f_highlight});
+        res.status(200).send({ message: 'Text submitted successfully', userInput, malePercentage: m_percent, femalePercentage: f_percent, maleHighlight: m_highlight, femaleHighlight: f_highlight, maleTable: m_table, femaleTable: f_table});
 
     } catch (error) {
         console.error(error);

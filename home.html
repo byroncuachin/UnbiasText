@@ -268,14 +268,14 @@
                 var inputText = document.getElementById("inputText").value;
 
                 console.log('Male Highlight:', m_highlight);
-                var maleHighlight = m_highlight.map(function(subArray){return subArray[0];});
+                var maleHighlight = m_highlight;
                 console.log(maleHighlight);
                 // Get the words to highlight (you can modify this array as needed)
                 //var maleHighlight = ["he", "him", "his"];
                 //var maleHighlight = m_highlight;
                 // console.log('Male Highlight:', maleHighlight);
                 // var femaleHighlight = ["she", "her", "hers"];
-                var femaleHighlight = f_highlight.map(function(subArray){return subArray[0];});
+                var femaleHighlight = f_highlight;
                 console.log(femaleHighlight);
 
                 // Escape special characters in the words to avoid issues with regular expressions
@@ -527,7 +527,7 @@
             copyAndHighlight(data.maleHighlight, data.femaleHighlight);            
             
             //Display the words with their associated vectors
-            displayWordVectors(data.maleHighlight, data.femaleHighlight);
+            displayWordVectors(data.maleTable, data.femaleTable);
         })
         .catch(error => console.error('Error:', error));
     }

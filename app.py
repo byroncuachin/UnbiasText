@@ -44,6 +44,7 @@ def predict():
         # get data
         data = request.get_json()
         text = data['text']
+        originalText = text
         
         # preprocessing text
         addSpaceBeforeText = add_space_before(text)
@@ -62,7 +63,7 @@ def predict():
         predict_function = lambda x: model.predict_proba(vectorizer.transform(x))
         explanation = explainer.explain_instance(text, predict_function, num_features=100)
         top_words_lime = explanation.as_list()
-        print("TOP WORDS: ", top_words_lime)
+        
         masculineWords = []
         feminineWords = []
         for word, score in top_words_lime:
@@ -78,15 +79,35 @@ def predict():
             masculineWords = masculineWords[:min(len(masculineWords), len(feminineWords))]
             feminineWords = feminineWords[:min(len(masculineWords), len(feminineWords))]
             
-        print("Male: ", pred[0][1])
-        print("Female: ", pred[0][0])
+        # get original words from stemmed words (map)
+        masculineStemmedWords = [stemmer.stem(word) for word, score in masculineWords]
+        feminineStemmedWords = [stemmer.stem(word) for word, score in feminineWords]
+        originalMasculineWords = []
+        originalFeminineWords = []
+        for stemmedWord in masculineStemmedWords:
+            for token in originalText.split():
+                if stemmer.stem(token) == stemmedWord:
+                    originalMasculineWords.append(token)
+                    break
+        for stemmedWord in feminineStemmedWords:
+            for token in originalText.split():
+                if stemmer.stem(token) == stemmedWord:
+                    originalFeminineWords.append(token)
+                    break
+            
+        print("Male Percentage: ", pred[0][1])
+        print("Female Percentage: ", pred[0][0])
         print("Masculine Words: ", masculineWords)
         print("Feminine Words: ", feminineWords)
+        print("Original Masculine Words: ", originalMasculineWords)
+        print("Original Feminine Words: ", originalFeminineWords)
         return jsonify({
             'malePercentage': round(pred[0][1], 2),
             'femalePercentage': round(pred[0][0], 2),
             'masculineWords': masculineWords,
-            'feminineWords': feminineWords
+            'feminineWords': feminineWords,
+            'originalMasculineWords': originalMasculineWords,
+            'originalFeminineWords': originalFeminineWords
         })
     except Exception as e:
         return jsonify({'error': str(e), 'trace': traceback.format_exc()})
