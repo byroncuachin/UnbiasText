@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import pickle, re, spacy, traceback
+import numpy as np
 import pandas as pd
 import spacy
 from lime import lime_text
@@ -49,18 +50,30 @@ def predict():
         # preprocessing text
         addSpaceBeforeText = add_space_before(text)
         text = removeUnnecessaryWords(addSpaceBeforeText)
+        print("Text after preprocessing: ", text)
                 
-        # get model
+        # get model with vectorizer
         with open('savedModels/randomForestModel.pkl', 'rb') as model_file:
             model, vectorizer = pickle.load(model_file)
         vectorizedText = vectorizer.transform([text])
         textsTransformed = pd.DataFrame(vectorizedText.toarray(), columns=vectorizer.get_feature_names_out())
-        
         # predict text bias probabilities
-        pred = model.predict_proba(textsTransformed)
-                
+        pred = model.predict_proba(textsTransformed)   
         # get most influential words
         predict_function = lambda x: model.predict_proba(vectorizer.transform(x))
+        
+        # # get model using word spacy word embeddings (doesn't work) 
+        # nlp = spacy.load("en_core_web_md") 
+        # def text_to_vectors(text):
+        #     doc = nlp(text)
+        #     return doc.vector
+        # with open('savedModels/randomForestModelSpacyEmbeddings.pkl', 'rb') as model_file:
+        #     model = pickle.load(model_file)
+        # transformedText = np.array([text_to_vectors(t) for t in text])
+        # # predict text bias probabilities
+        # predict_function = lambda x: model.predict_proba(np.array([text_to_vectors(t) for t in x]))
+        # pred = model.predict(transformedText)
+        
         explanation = explainer.explain_instance(text, predict_function, num_features=100)
         top_words_lime = explanation.as_list()
         
@@ -72,9 +85,9 @@ def predict():
             else:
                 feminineWords.append((word, round(score, 3)))
 
+        # make the amount of masculine and feminine words equal
         masculineWords = masculineWords[:10]
         feminineWords = feminineWords[:10]
-        
         if len(masculineWords) != len(feminineWords):
             masculineWords = masculineWords[:min(len(masculineWords), len(feminineWords))]
             feminineWords = feminineWords[:min(len(masculineWords), len(feminineWords))]
