@@ -279,7 +279,7 @@
             }
 
             .right-label {
-                text-align: right; /* Align the right label to the right */
+                text-align: center; /* Align the right label to the right */
             }
 
             .left-label {
@@ -308,7 +308,7 @@
                 </div>
                 <input type="range" min="0" max="1" step="1" value="0" id="toggle-scroll">
                 <div class="label-container">
-                    <span class="right-label" onclick="setScrollValue(1)">Political</span>
+                    <span class="right-label" onclick="setScrollValue(1)">Political (Beta)</span>
                 </div>
             </div>
         
@@ -337,6 +337,9 @@
                     console.log('Scroll value:', scrollBar.value);
                 }
             </script>
+
+            <!-- Include your external JavaScript file -->
+            <script src="index.js"></script>
             <div class="inputWrapper">
                 <form id="myForm">
                     <textarea id="inputText" placeholder="Write something . . ."></textarea>
@@ -604,7 +607,7 @@
             
            // console.log('hello2');
         const textInput = document.getElementById('inputText').value;
-
+        if (scrollBar.value == 0) {
         // Send a POST request to the server
         fetch('http://localhost:3000', {
             method: 'POST',
@@ -650,6 +653,7 @@
             displayWordVectors(data.maleTable, data.femaleTable);
         })
         .catch(error => console.error('Error:', error));
+    }
     }
         </script>
     </body>
