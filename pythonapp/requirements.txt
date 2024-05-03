@@ -1,0 +1,8 @@
+functions-framework
+firebase-admin
+flask
+spacy
+numpy
+pandas
+lime
+nltk
