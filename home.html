@@ -69,6 +69,14 @@
               /*  color: black; */
             }
 
+            .highlightLiberal {
+                background-color: #266edb;
+            }
+
+            .highlightConservative {
+                background-color: #df3737;
+            }
+
              /* Styling for the toggle container */
         .toggle-container {
             display: flex;
@@ -143,21 +151,44 @@
             width: 50%;
             justify-content: space-around;
         }
+
+        #outputPercentagesPolitical {
+            display: flex;
+            width: 50%;
+            justify-content: space-around;
+        }
         
         #maleDiv {
-            background-color: #0F52BA;
+            background-color: var(--male-color); /*#0F52BA;*/
         }
 
         #femaleDiv{
-            background-color: #AA336A;
+            background-color: var(--female-color); /*#AA336A;*/
         }
-        #wordvectorChart{
+
+        /* #liberalDiv {
+            background-color: #266edb;
+        }
+
+        #conservativeDiv{
+            background-color: #df3737;
+        } */
+
+        #wordvectorChart {
             width: 100%;
             margin-top: 60px;
             display: flex;
             flex-direction: row;
             justify-content: space-around;
         }
+
+        /* #wordvectorChartPolitical {
+            width: 100%;
+            margin-top: 60px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+        } */
         
         .maleChart{
             padding: 10px;
@@ -170,23 +201,50 @@
          /*   border: 2px solid #AA336A; */
             width: 40%; 
         }
+
+        /* .liberalChart{
+            padding: 10px;
+            width: 40%;
+        }
+
+        .conservativeChart{
+            padding: 10px;
+            width: 40%; 
+        } */
+
         #result{
             margin-top: 20px;
         }
         
 
-        /* Styling for the table cells in the masculine and feminine word tables */
+        /* Styling for the table cells in the masculine/feminine and liberal/conservative word tables */
         .maleChart th, .maleChart td {
             padding: 10px;
             text-align: left;
-            border: 1px solid #0F52BA;
+            border: 1px solid var(--male-color); 
         }
+        /*1px solid #0F52BA;*/
 
         .femaleChart th, .femaleChart td {
             padding: 10px;
             text-align: left;
-            border: 1px solid #AA336A;
+            border: 1px solid var(--female-color);
         }
+        /*1px solid #AA336A;*/
+
+        /* .liberalChart th, .liberalChart td {
+            padding: 10px;
+            text-align: left;
+            border: var(--male-color); 
+        } */
+        /*1px solid #266edb;*/
+
+        /* .conservativeChart th, .conservativeChart td {
+            padding: 10px;
+            text-align: left;
+            border: var(--female-color); 
+        } */
+        /*1px solid #df3737;*/
 
         .maleChart th, .femaleChart th {
             background-color: #f2f2f2;
@@ -208,6 +266,71 @@
             width: 50%; /* Adjust as needed */
         }
         </style>
+        <title>Custom Scroll Bar</title>
+        <style>
+            /* Styling for the scroll bar */
+            .scroll-container {
+                display: flex;
+                align-items: center;
+                width: 190px;
+                margin-bottom: 20px; /* Add spacing after the toggle button */
+            }
+    
+            /* Customize the appearance of the range input */
+            input[type="range"] {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 100%;
+                height: 5px; /* Adjust the height to make it shorter */
+                background: #ccc;
+                border-radius: 1.5px; /* Half of the height for rounded edges */
+                outline: none;
+            }
+    
+            /* Customize the appearance of the slider thumb */
+            input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 15px; /* Adjust the width to make it slightly thicker */
+                height: 15px; /* Keep the height proportional */
+                background: #d64a40; /* var(--thumb-color); Use a custom property for the color */
+                border-radius: 50%; /* Make it circular */
+                cursor: pointer;
+                transition: background 0.3s; /* Add a smooth transition effect */
+            }
+
+            input[type="range"]:active::-webkit-slider-thumb {
+                background: rgb(255, 224, 224);
+            }
+            
+            /* Additional styling for the text labels */
+            .label-container {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .left-label,
+            .right-label {
+                font-size: 18px;
+                color: #666;
+                flex: 1; /* Distribute available space evenly */
+                padding: 0 10px; /* Add spacing to the left and right of the labels */
+                cursor: pointer; /* Add cursor pointer to the labels */
+            }
+
+            .right-label {
+                text-align: center; /* Align the right label to the right */
+            }
+
+            .left-label {
+                color: var(--gender-color); /* Highlight when selected */
+            }
+
+            .right-label {
+                color: var(--political-color); /* Highlight when selected */
+            }
+        </style>
 
       
 
@@ -217,6 +340,47 @@
     <body> 
         <div class="content">
             <h1>UnbiasText</h1>
+            <div class="scroll-container">
+                <!-- <span class="left-label">Gender</span>
+                <input type="range" min="0" max="1" step="1" value="0" id="toggle-scroll">
+                <span class="right-label">Political</span> -->
+                <div class="label-container">
+                    <span class="left-label" onclick="setScrollValue(0)">Gender</span>
+                </div>
+                <input type="range" min="0" max="1" step="1" value="0" id="toggle-scroll">
+                <div class="label-container">
+                    <span class="right-label" onclick="setScrollValue(1)">Political (Beta)</span>
+                </div>
+            </div>
+        
+            <script>
+                // scrollBar = 0 => Gender
+                // scrollBar = 1 => Political
+                const scrollBar = document.getElementById('toggle-scroll');
+                setScrollValue(0);
+                scrollBar.addEventListener('input', () => {
+                    const value = scrollBar.value;
+                    const genderColor = value === '0' ? 'white' : '#666';
+                    const politicalColor = value === '1' ? 'white' : '#666';
+                    document.documentElement.style.setProperty('--gender-color', genderColor);
+                    document.documentElement.style.setProperty('--political-color', politicalColor);
+                    // Use the value (0 or 1) to toggle your desired functionality
+                    console.log('Scroll value:', value);
+                });
+
+                function setScrollValue(newValue) {
+                    scrollBar.value = newValue;
+                    const genderColor = scrollBar.value === '0' ? 'white' : '#666';
+                    const politicalColor = scrollBar.value === '1' ? 'white' : '#666';
+                    document.documentElement.style.setProperty('--gender-color', genderColor);
+                    document.documentElement.style.setProperty('--political-color', politicalColor);
+                    // Use the value (0 or 1) to toggle your desired functionality
+                    console.log('Scroll value:', scrollBar.value);
+                }
+            </script>
+
+            <!-- Include your external JavaScript file -->
+            <script src="index.js"></script>
             <div class="inputWrapper">
                 <form id="myForm">
                     <textarea id="inputText" placeholder="Write something . . ."></textarea>
@@ -245,12 +409,26 @@
                         <p id="femaleP"></p>
                     </div>
                 </div>
+                <!-- <div id="outputPercentagesPolitical">
+                    <div id="liberalDiv">
+                        <span id="liberalSpan"></span>
+                        <p id="liberalP"></p>
+                    </div>
+                    <div id="conservativeDiv">
+                        <span id="conservativeSpan"></span>
+                        <p id="conservativeP"></p>
+                    </div>
+                </div> -->
                 <div id="result"></div>
                 <div id="outputText"></div>
                 <div id="wordvectorChart">
                     <div id="maleChart"></div>
                     <div id="femaleChart"></div>
                 </div>
+                <!-- <div id="wordvectorChartPolitical">
+                    <div id="liberalChart"></div>
+                    <div id="conservativeChart"></div>
+                </div> -->
             </div>
         </div>
 
@@ -312,12 +490,58 @@
                 document.getElementById("outputText").innerHTML = highlightedText;
             }
 
+            function copyAndHighlightPolitical(l_highlight, c_highlight){
+                // Get the input text
+                var inputText = document.getElementById("inputText").value;
+
+                console.log('Liberal Highlight:', l_highlight);
+                var liberalHighlight = l_highlight;
+                console.log(liberalHighlight);
+                
+                var conservativeHighlight = c_highlight;
+                console.log(conservativeHighlight);
+
+                // Escape special characters in the words to avoid issues with regular expressions
+                var escapedLiberalWords = liberalHighlight.map(function(word) {
+                    return word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                });
+                var escapedConservativeWords = conservativeHighlight.map(function(word) {
+                    return word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                });
+
+                // Create a regular expression pattern to match the words
+                var pattern1 = new RegExp('\\b(' + escapedLiberalWords.join('|') + ')\\b', 'gi');
+                var pattern2 = new RegExp('\\b(' + escapedConservativeWords.join('|') + ')\\b', 'gi');
+
+                var highlightedText = null;
+                // Replace matched words with highlighted version
+                if (l_highlight.length != 0){
+                highlightedText = inputText.replace(pattern1, function(match) {
+                    return '<span class="highlightLiberal">' + match + '</span>';
+                });}
+                
+                else if (c_highlight.length != 0){
+                highlightedText = inputText.replace(pattern2, function(match) {
+                    return '<span class="highlightConservative">' + match + '</span>';
+                });}
+
+                if (c_highlight.length != 0){
+                highlightedText = highlightedText.replace(pattern2, function(match) {
+                    return '<span class="highlightConservative">' + match + '</span>';
+                });}
+
+                // Set the highlighted text to the output div
+                document.getElementById("outputText").innerHTML = highlightedText;
+            }
+
             function displayWordVectors(m_words, f_words){
+                const maleColor = '#0F52BA';
+                const femaleColor = '#AA336A';
+                document.documentElement.style.setProperty('--male-color', maleColor);
+                document.documentElement.style.setProperty('--female-color', femaleColor);
+
                 var malechart = document.getElementById("maleChart");
                 var femalechart = document.getElementById("femaleChart");
-
-               // malechart.innerHTML = ''; // Clear existing content
-               // femalechart.innerHTML = ''; // Clear existing content
 
                 // Clear existing content
                 clearElement(malechart);
@@ -327,17 +551,26 @@
                 malechart.appendChild(createTableElement('Masculine Words', m_words));
                 femalechart.appendChild(createTableElement('Feminine Words', f_words));
 
-                /*
-                malechart.innerHTML += 'Masculine Words<br>';
-                Object.entries(m_words).forEach(([key, value]) => {
-                    malechart.innerHTML += `${key}: ${value[0]}, ${value[1]}<br>`;
-                });
+                malechart.classList.add('maleChart');
+                femalechart.classList.add('femaleChart');
+            }
 
-                femalechart.innerHTML += 'Feminine Words<br>';
-                Object.entries(f_words).forEach(([key, value]) => {
-                    femalechart.innerHTML += `${key}: ${value[0]}, ${value[1]}<br>`;
-                });
-                */
+            function displayWordVectorsPolitical(l_words, c_words){
+                const liberalColor = '#266edb';
+                const conservativeColor = '#df3737';
+                document.documentElement.style.setProperty('--male-color', liberalColor);
+                document.documentElement.style.setProperty('--female-color', conservativeColor);
+
+                var malechart = document.getElementById("maleChart");
+                var femalechart = document.getElementById("femaleChart");
+
+                // Clear existing content
+                clearElement(malechart);
+                clearElement(femalechart);
+
+                //Create tables
+                malechart.appendChild(createTableElement('Liberal Words', l_words));
+                femalechart.appendChild(createTableElement('Conservative Words', c_words));
 
                 malechart.classList.add('maleChart');
                 femalechart.classList.add('femaleChart');
@@ -408,17 +641,55 @@
         }
 */
         function displayPercentageContainer(m_percent, f_percent) {
-       
+        
+            //Raw values
+            console.log("Raw m_percent:", m_percent);
+            console.log("Raw f_percent:", f_percent);
+
+            //Truncate percent values
+            var truncated1 = Number(m_percent.toFixed(2));
+            var truncated2 = Number(f_percent.toFixed(2));
+
+            console.log("Truncated m_percent:", truncated1);
+            console.log("Truncated f_percent:", truncated2);
+
+            //Add percent symbol
+            var percent1 = `${truncated1}%`;
+            var percent2 = `${truncated2}%`;
+
+            console.log("Add %:", percent1);
+            console.log("Add %", percent2);
+
+            // Create the container div
+            var percentageContainer = document.getElementById("outputPercentages");
+            percentageContainer.classList.add('percentage-container');
+
+            // Create the first percentage div
+            var percentageDiv1 = fillMaleDiv(percent1, 'Male Bias');
+
+            // Create the second percentage div
+            var percentageDiv2 = fillFemaleDiv(percent2, 'Female Bias');
+
+            // Append the percentage divs to the container
+            percentageContainer.appendChild(percentageDiv1);
+            percentageContainer.appendChild(percentageDiv2);
+
+            // Append the container to the body
+            //document.body.appendChild(percentageContainer);
+        }
+        
+        function displayPercentageContainerPolitical(l_percent, c_percent) {
+        
         //Raw values
-        console.log("Raw m_percent:", m_percent);
-        console.log("Raw f_percent:", f_percent);
+        console.log("Raw l_percent:", l_percent);
+        console.log("Raw c_percent:", c_percent);
 
         //Truncate percent values
-        var truncated1 = Number(m_percent.toFixed(2));
-        var truncated2 = Number(f_percent.toFixed(2));
+        var truncated1 = Number(l_percent.toFixed(2));
+        var truncated2 = Number(c_percent.toFixed(2));
 
-        console.log("Truncated m_percent:", truncated1);
-        console.log("Truncated f_percent:", truncated2);
+        console.log("Truncated l_percent:", truncated1);
+        console.log("Truncated c_percent:", truncated2);
 
         //Add percent symbol
         var percent1 = `${truncated1}%`;
@@ -429,13 +700,14 @@
 
         // Create the container div
         var percentageContainer = document.getElementById("outputPercentages");
+        // var percentageContainer = document.getElementById("outputPercentagesPolitical");
         percentageContainer.classList.add('percentage-container');
 
         // Create the first percentage div
-        var percentageDiv1 = fillMaleDiv(percent1, 'Male Bias');
+        var percentageDiv1 = fillLiberalDiv(percent1, 'Liberal Bias');
 
         // Create the second percentage div
-        var percentageDiv2 = fillFemaleDiv(percent2, 'Female Bias');
+        var percentageDiv2 = fillConservativeDiv(percent2, 'Conservative Bias');
 
         // Append the percentage divs to the container
         percentageContainer.appendChild(percentageDiv1);
@@ -443,94 +715,176 @@
 
         // Append the container to the body
         //document.body.appendChild(percentageContainer);
-        }
+    }
 
         function fillMaleDiv(percentage, label) {
-        // Create a percentage div
-        var percentageDiv = document.getElementById("maleDiv");
-        percentageDiv.classList.add('percentage-div');
+            // Create a percentage div
+            var percentageDiv = document.getElementById("maleDiv");
+            percentageDiv.classList.add('percentage-div');
 
-        // Create a span for the percentage
-        var percentageSpan = document.getElementById("maleSpan");
-        percentageSpan.textContent = percentage;
+            // Create a span for the percentage
+            var percentageSpan = document.getElementById("maleSpan");
+            percentageSpan.textContent = percentage;
 
-        // Create a paragraph for the label
-        var labelParagraph = document.getElementById("maleP");
-        labelParagraph.textContent = label;
+            // Create a paragraph for the label
+            var labelParagraph = document.getElementById("maleP");
+            labelParagraph.textContent = label;
 
-        return percentageDiv;
+            return percentageDiv;
+        }
+
+        function fillLiberalDiv(percentage, label) {
+            // Create a percentage div
+            var percentageDiv = document.getElementById("maleDiv");
+            // var percentageDiv = document.getElementById("liberalDiv");
+            percentageDiv.classList.add('percentage-div');
+
+            // Create a span for the percentage
+            var percentageSpan = document.getElementById("maleSpan");
+            // var percentageSpan = document.getElementById("liberalSpan");
+            percentageSpan.textContent = percentage;
+
+            // Create a paragraph for the label
+            var labelParagraph = document.getElementById("maleP");
+            // var labelParagraph = document.getElementById("liberalP");
+            labelParagraph.textContent = label;
+
+            return percentageDiv;
         }
 
         function fillFemaleDiv(percentage, label) {
-        // Create a percentage div
-        var percentageDiv = document.getElementById("femaleDiv");
-        percentageDiv.classList.add('percentage-div');
+            // Create a percentage div
+            var percentageDiv = document.getElementById("femaleDiv");
+            percentageDiv.classList.add('percentage-div');
 
-        // Create a span for the percentage
-        var percentageSpan = document.getElementById("femaleSpan");
-        percentageSpan.textContent = percentage;
+            // Create a span for the percentage
+            var percentageSpan = document.getElementById("femaleSpan");
+            percentageSpan.textContent = percentage;
 
-        // Create a paragraph for the label
-        var labelParagraph = document.getElementById("femaleP");
-        labelParagraph.textContent = label;
+            // Create a paragraph for the label
+            var labelParagraph = document.getElementById("femaleP");
+            labelParagraph.textContent = label;
 
-        return percentageDiv;
+            return percentageDiv;
+        }
+
+        function fillConservativeDiv(percentage, label) {
+            // Create a percentage div
+            var percentageDiv = document.getElementById("femaleDiv");
+            // var percentageDiv = document.getElementById("conservativeDiv");
+            percentageDiv.classList.add('percentage-div');
+
+            // Create a span for the percentage
+            var percentageSpan = document.getElementById("femaleSpan");
+            // var percentageSpan = document.getElementById("conservativeSpan");
+            percentageSpan.textContent = percentage;
+
+            // Create a paragraph for the label
+            var labelParagraph = document.getElementById("femaleP");
+            // var labelParagraph = document.getElementById("conservativeP");
+            labelParagraph.textContent = label;
+
+            return percentageDiv;
         }
 
         function submitText(event) {
            // console.log('hello');
            // event.preventDefault();
-          //  event.stopPropagation();
+           // event.stopPropagation();
             
            // console.log('hello2');
-        const textInput = document.getElementById('inputText').value;
+            const textInput = document.getElementById('inputText').value;
+            if (scrollBar.value == 0) {
+                // Send a POST request to the server
+                fetch('http://localhost:3000', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: textInput, textOption: scrollBar.value }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
 
-        // Send a POST request to the server
-        fetch('http://localhost:3000', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ text: textInput }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
+                    // Update the DOM to display the received text
+                    const outputText = document.getElementById('outputText');
+                    outputText.innerHTML = `${data.userInput}`;
 
-            // Update the DOM to display the received text
-            const outputText = document.getElementById('outputText');
-            outputText.innerHTML = `${data.userInput}`;
-
-            // Check for bias and display result
-         //   const isActive = document.querySelector('.toggle-handle').style.transform === 'translateX(20px)';
-         //   console.log(isActive);
-            const isBiased = (data.malePercentage >= 70) || (data.femalePercentage >= 70);
+                    // Check for bias and display result
+                //   const isActive = document.querySelector('.toggle-handle').style.transform === 'translateX(20px)';
+                //   console.log(isActive);
+                    const isBiased = (data.malePercentage >= 70) || (data.femalePercentage >= 70);
 
 
-            // Assign masculineWords to maleHighlight
-            console.log('Male Highlight:', data.maleHighlight);
-            console.log('Male Percentage', data.malePercentage);
+                    // Assign masculineWords to maleHighlight
+                    console.log('Male Highlight:', data.maleHighlight);
+                    console.log('Male Percentage', data.malePercentage);
 
-            // Display the percentages after setting the output text
-            displayPercentageContainer(data.malePercentage, data.femalePercentage);
+                    // Display the percentages after setting the output text
+                    displayPercentageContainer(data.malePercentage, data.femalePercentage);
 
-            //Display bias result
-            const resultElement = document.getElementById('result');
-            if (isBiased) {
-            resultElement.textContent = 'BIASED';
-            resultElement.style.color = 'red';  // Customize the styling
-            } else {
-            resultElement.textContent = 'UNBIASED';
-            resultElement.style.color = 'green';  // Customize the styling
-            }
+                    //Display bias result
+                    const resultElement = document.getElementById('result');
+                    if (isBiased) {
+                    resultElement.textContent = 'BIASED';
+                    resultElement.style.color = 'red';  // Customize the styling
+                    } else {
+                    resultElement.textContent = 'UNBIASED';
+                    resultElement.style.color = 'green';  // Customize the styling
+                    }
 
-            copyAndHighlight(data.maleHighlight, data.femaleHighlight);            
-            
-            //Display the words with their associated vectors
-            displayWordVectors(data.maleTable, data.femaleTable);
-        })
-        .catch(error => console.error('Error:', error));
-    }
+                    copyAndHighlight(data.maleHighlight, data.femaleHighlight);            
+                    
+                    //Display the words with their associated vectors
+                    displayWordVectors(data.maleTable, data.femaleTable);
+                })
+                .catch(error => console.error('Error:', error));
+            } else if (scrollBar.value == 1) {
+                // Send a POST request to the server
+                fetch('http://localhost:3000', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: textInput, textOption: scrollBar.value }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+
+                    // Update the DOM to display the received text
+                    const outputText = document.getElementById('outputText');
+                    outputText.innerHTML = `${data.userInput}`;
+
+                    // Check for bias and display result
+                    const isBiased = (data.liberalPercentage >= 70) || (data.conservativePercentage >= 70);
+
+                    console.log('Liberal Highlight:', data.liberalHighlight);
+                    console.log('Liberal Percentage', data.liberalPercentage);
+
+                    // Display the percentages after setting the output text
+                    displayPercentageContainerPolitical(data.liberalPercentage, data.conservativePercentage);
+
+                    //Display bias result
+                    const resultElement = document.getElementById('result');
+                    if (isBiased) {
+                    resultElement.textContent = 'BIASED';
+                    resultElement.style.color = 'red';  // Customize the styling
+                    } else {
+                    resultElement.textContent = 'UNBIASED';
+                    resultElement.style.color = 'green';  // Customize the styling
+                    }
+
+                    copyAndHighlightPolitical(data.liberalHighlight, data.conservativeHighlight);            
+                    
+                    //Display the words with their associated vectors
+                    displayWordVectorsPolitical(data.liberalTable, data.conservativeTable);
+                    // displayWordVectorsPolitical(data.maleTable, data.femaleTable);
+                })
+                .catch(error => console.error('Error:', error));
+            } else {}
+        }
         </script>
     </body>
 </html>
