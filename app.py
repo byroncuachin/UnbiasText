@@ -21,8 +21,8 @@ def add_space_before(text):
 
 
 # remove gendered pronounds, names, stop words, and apply stemming
+nlp = spacy.load("en_core_web_sm")
 def removeUnnecessaryWords(text):
-    nlp = spacy.load("en_core_web_sm")
     doc = nlp(text)
 
     result = " ".join(
